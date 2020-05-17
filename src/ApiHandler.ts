@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+/*
+  Follow: https://github.com/paritytech/substrate/tree/at-fee-exposure
+  Need to: get consts from runtime, on_initialize event from tx payment
+           and final weight of each function, and use to calculate tx fee
+  Consts: byte_fee, coefficients, extrinsic base weight
+  on_init: Transaction Payment event with Fee Multiplier
+  per tx: weight consumed (look out for refunds), encoded length
+ */
+
 import { ApiPromise } from '@polkadot/api';
 import { BlockHash } from '@polkadot/types/interfaces/chain';
 import { EventRecord } from '@polkadot/types/interfaces/system';
