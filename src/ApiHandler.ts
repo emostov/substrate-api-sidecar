@@ -66,25 +66,10 @@ export default class ApiHandler {
 		});
 
 		const defaultSuccess = typeof events === 'string' ? events : false;
-		const queryInfo = await Promise.all(block.extrinsics.map(async (extrinsic) => {
-			if (extrinsic.isSigned) {
-				try {
-					return await api.rpc.payment.queryInfo(extrinsic.toHex(), parentHash);
-				} catch (err) {
-					console.error(err);
-
-					return {
-						error: 'Unable to fetch fee info',
-					}
-				}
-			}
-
-			return {};
-		}));
-		const extrinsics = block.extrinsics.map((extrinsic, idx) => {
+		
+		const extrinsics = block.extrinsics.map((extrinsic) => {
 			const { method, nonce, signature, signer, isSigned, tip, args } = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
-			const info = queryInfo[idx];
 
 			return {
 				method: `${method.sectionName}.${method.methodName}`,
@@ -93,7 +78,7 @@ export default class ApiHandler {
 				args,
 				tip,
 				hash,
-				info,
+				info: {},
 				events: [] as SanitizedEvent[],
 				success: defaultSuccess,
 				paysFee: null as null | boolean, // override to bool if `system.ExtrinsicSuccess|ExtrinsicFailed` event is present
@@ -147,6 +132,23 @@ export default class ApiHandler {
 				}
 			}
 		}
+
+		block.extrinsics.forEach(async (extrinsic, idx) => {
+			if (!extrinsic.isSigned) {
+				return;
+			}
+
+			try {
+				if (api.runtimeVersion.specName.toString() === 'kusama') {
+					extrinsics[idx].info = await api.rpc.payment.queryInfo(extrinsic.toHex(), parentHash);
+				} else {
+					extrinsics[idx].info = {};
+				}
+			} catch (err) {
+				console.error(err);
+				extrinsics[idx].info = { error: 'Unable to fetch fee info' };
+			}
+		});
 
 		return {
 			number,
