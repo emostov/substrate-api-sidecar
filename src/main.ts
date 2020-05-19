@@ -43,36 +43,36 @@ function parseNumber(n: string): number {
 
 async function main() {
 	const api = await ApiPromise.create({ 
-    provider: new WsProvider(WS_URL),
-    types: {
-      // mapping the actual specified address format
-      Address: 'AccountId',
-      Weight: 'u32',
-      // mapping the lookup
-      LookupSource: 'AccountId',
-      WeightToFeeCoefficient: {
-        coeff_integer: "Balance",
-        coeff_fraction: "Perbill",
-        negative: "bool",
-        degree: "u8"
-      },
-      // MultiSignature: {
-      //   _enum: {
-      //     /// An Ed25519 signature.
-      //     Ed25519: "ed25519::Signature",
-      //     /// An Sr25519 signature.
-      //     Sr25519: "sr25519::Signature",
-      //     /// An ECDSA/SECP256k1 signature.
-      //     Ecdsa: "ecdsa::Signature",
-      //   }
-      // },
-      // DispatchClass: {
-      //   _enum: ['Normal', 'Operational', 'Mandatory']
-      // }
+		provider: new WsProvider(WS_URL),
+		types: {
+			// mapping the actual specified address format
+			Address: 'AccountId',
+			Weight: 'u32',
+			// mapping the lookup
+			LookupSource: 'AccountId',
+			WeightToFeeCoefficient: {
+				coeff_integer: "Balance",
+				coeff_fraction: "Perbill",
+				negative: "bool",
+				degree: "u8"
+			},
+			MultiSignature: {
+				_enum: {
+					/// An Ed25519 signature.
+					Ed25519: "ed25519::Signature",
+					/// An Sr25519 signature.
+					Sr25519: "sr25519::Signature",
+					/// An ECDSA/SECP256k1 signature.
+					Ecdsa: "ecdsa::Signature",
+				}
+			},
+			DispatchClass: {
+				_enum: ['Normal', 'Operational', 'Mandatory']
+			}
 
-    }
+		}
 
-  });
+	});
 	const handler = new ApiHandler(api);
 	const app = express();
 
