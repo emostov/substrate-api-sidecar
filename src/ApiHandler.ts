@@ -66,7 +66,8 @@ export default class ApiHandler {
 		});
 
 		const defaultSuccess = typeof events === 'string' ? events : false;
-		
+    
+    // map over extrinsics and create an array of extrinsic objects
 		const extrinsics = block.extrinsics.map((extrinsic) => {
 			const { method, nonce, signature, signer, isSigned, tip, args } = extrinsic;
 			const hash = u8aToHex(blake2AsU8a(extrinsic.toU8a(), 256));
@@ -140,6 +141,7 @@ export default class ApiHandler {
 
 			try {
 				if (api.runtimeVersion.specName.toString() === 'kusama') {
+          // get the fee information from the encoded extrinsic
 					extrinsics[idx].info = await api.rpc.payment.queryInfo(extrinsic.toHex(), parentHash);
 				} else {
 					extrinsics[idx].info = {};
